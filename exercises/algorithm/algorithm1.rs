@@ -69,15 +69,42 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+    pub fn merge(list_a: LinkedList<T>, list_b: LinkedList<T>) -> Self
+    where
+        T: PartialOrd + Clone, // Ensure T can be cloned
+    {
+        let mut merged_list = LinkedList::new();
+        let mut current_a = list_a.start;
+        let mut current_b = list_b.start;
+
+        while current_a.is_some() || current_b.is_some() {
+            let val_a = current_a.map(|node| unsafe { &*node.as_ptr() }); // Borrow the node
+            let val_b = current_b.map(|node| unsafe { &*node.as_ptr() }); // Borrow the node
+
+            match (val_a, val_b) {
+                (Some(a), Some(b)) => {
+                    if a.val <= b.val { // Compare the values directly
+                        merged_list.add(a.val.clone()); // Clone the value to add to the merged list
+                        current_a = unsafe { a.next }; // Move to the next node in list A
+                    } else {
+                        merged_list.add(b.val.clone()); // Clone the value to add to the merged list
+                        current_b = unsafe { b.next }; // Move to the next node in list B
+                    }
+                }
+                (Some(a), None) => {
+                    merged_list.add(a.val.clone()); // Clone the value to add to the merged list
+                    current_a = unsafe { a.next }; // Move to the next node in list A
+                }
+                (None, Some(b)) => {
+                    merged_list.add(b.val.clone()); // Clone the value to add to the merged list
+                    current_b = unsafe { b.next }; // Move to the next node in list B
+                }
+                _ => {}
+            }
         }
-	}
+
+        merged_list
+    }
 }
 
 impl<T> Display for LinkedList<T>

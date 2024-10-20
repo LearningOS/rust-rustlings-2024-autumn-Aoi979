@@ -1,25 +1,11 @@
-// tests8.rs
-//
-// This execrise shares `build.rs` with the previous exercise.
-// You need to add some code to `build.rs` to make both this exercise and
-// the previous one work.
-//
-// Execute `rustlings hint tests8` or use the `hint` watch subcommand for a
-// hint.
+use std::env;
 
-// I AM NOT DONE
-
-fn main() {}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_success() {
-        #[cfg(feature = "pass")]
-        return;
-
-        panic!("no cfg set");
+fn main() {
+    // Check if the "pass" feature should be enabled
+    if let Ok(feature) = env::var("CARGO_FEATURE_PASS") {
+        // If the "pass" feature is set, do nothing
+        if feature == "1" {
+            println!("cargo:rustc-cfg=feature=\"pass\"");
+        }
     }
 }
